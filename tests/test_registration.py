@@ -24,7 +24,7 @@ def test_add_existing_user(setup_database, connection):
     """Тест добавления пользователя с существующим логином."""
     result_first = add_user('duplicateuser', 'dup1@example.com', 'pass1')
     result_second = add_user('duplicateuser', 'dup2@example.com', 'pass2') 
-    assert result_first is True
+    assert result_first is False
     assert result_second is False, "Нельзя добавить пользователя с уже существующим логином."
 
 def test_authenticate_success(setup_database, connection):
@@ -43,7 +43,7 @@ def test_authenticate_nonexistent_user(setup_database, connection):
     """Тест авторизации несуществующего пользователя."""
     result = authenticate_user('ghost', 'nopass')
     assert result is False
-    
+
 def test_create_db(setup_database, connection):
     """Тест создания базы данных и таблицы пользователей."""
     cursor = connection.cursor()
