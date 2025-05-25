@@ -20,7 +20,30 @@ def connection():
     yield conn
     conn.close()
 
+def test_add_existing_user(setup_database, connection):
+    """Тест добавления пользователя с существующим логином."""
+    result_first = add_user('duplicateuser', 'dup1@example.com', 'pass1')
+    result_second = add_user('duplicateuser', 'dup2@example.com', 'pass2') 
+    assert result_first is True
+    assert result_second is False, "Нельзя добавить пользователя с уже существующим логином."
 
+def test_authenticate_success(setup_database, connection):
+    """Тест успешной авторизации пользователя."""
+    add_user('authuser', 'auth@example.com', 'securepass')
+    result = authenticate_user('authuser', 'securepass')
+    assert result is True
+
+def test_authenticate_wrong_password(setup_database, connection):
+    """Тест авторизации с неправильным паролем."""
+    add_user('wrongpassuser', 'wrong@example.com', 'rightpass')
+    result = authenticate_user('wrongpassuser', 'wrongpass')
+    assert result is False
+
+def test_authenticate_nonexistent_user(setup_database, connection):
+    """Тест авторизации несуществующего пользователя."""
+    result = authenticate_user('ghost', 'nopass')
+    assert result is False
+    
 def test_create_db(setup_database, connection):
     """Тест создания базы данных и таблицы пользователей."""
     cursor = connection.cursor()
